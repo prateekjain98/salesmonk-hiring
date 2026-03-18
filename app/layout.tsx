@@ -1,5 +1,6 @@
 import { ClerkProvider } from "@clerk/nextjs";
-import { dark } from "@clerk/themes";
+import { ui } from "@clerk/ui";
+import type { Appearance } from "@clerk/ui";
 import "./globals.css";
 import localFont from "next/font/local";
 import { ConvexClientProvider } from "./ConvexClientProvider";
@@ -19,35 +20,30 @@ const geistMono = localFont({
   variable: "--font-geist-mono",
 });
 
+const clerkAppearance = {
+  variables: {
+    colorPrimary: "#f97316",
+    colorBackground: "#0f0f0f",
+    colorForeground: "#ffffff",
+  },
+  elements: {
+    card: "bg-[#111111] border border-white/8 shadow-none",
+    headerTitle: "text-white",
+    headerSubtitle: "text-white/50",
+    socialButtonsBlockButton: "border-white/10 bg-white/4 text-white/80 hover:bg-white/8",
+    socialButtonsBlockButtonText: "text-white/80",
+    dividerText: "text-white/30",
+    formFieldLabel: "text-white/50",
+    formFieldInput: "bg-[#1a1a1a] border-white/10 text-white",
+    footerActionText: "text-white/40",
+    footerActionLink: "text-orange-400 hover:text-orange-300",
+  },
+} satisfies Appearance;
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <ClerkProvider
-        appearance={{
-          baseTheme: dark,
-          variables: {
-            colorBackground: "#0f0f0f",
-            colorInputText: "#ffffff",
-            colorText: "#ffffff",
-            colorTextSecondary: "rgba(255,255,255,0.65)",
-            colorPrimary: "#f97316",
-            colorNeutral: "#ffffff",
-            borderRadius: "0.5rem",
-            fontFamily: "var(--font-geist-sans), system-ui, sans-serif",
-          },
-          elements: {
-            headerTitle: "!text-white",
-            headerSubtitle: "!text-white/60",
-            socialButtonsBlockButton: "!text-white/80 !border-white/15",
-            socialButtonsBlockButtonText: "!text-white/80",
-            dividerText: "!text-white/35",
-            formFieldLabel: "!text-white/55",
-            footerActionText: "!text-white/50",
-            footerActionLink: "!text-orange-400 hover:!text-orange-300",
-            identityPreviewText: "!text-white/70",
-          },
-        }}
-      >
+      <ClerkProvider ui={ui} appearance={clerkAppearance}>
         <body className="min-h-screen flex flex-col antialiased bg-black">
           <ConvexClientProvider>{children}</ConvexClientProvider>
         </body>
