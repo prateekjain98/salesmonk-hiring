@@ -1,73 +1,50 @@
-import { UserDetails } from "../components/user-details";
+import { auth, currentUser } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
-import { auth } from "@clerk/nextjs/server";
-import { CodeSwitcher } from "../components/code-switcher";
-import { LearnMore } from "../_template/components/learn-more";
-import { Footer } from "../_template/components/footer";
-import { ClerkLogo } from "../_template/components/clerk-logo";
-import { NextLogo } from "../_template/components/next-logo";
 import Link from "next/link";
 
-import { DASHBOARD_CARDS } from "../_template/content/cards";
-import { DeployButton } from "../_template/components/deploy-button";
-
 export default async function DashboardPage() {
-  await auth.protect();
+  const { userId } = await auth();
+  if (!userId) redirect("/sign-in");
+
+  const user = await currentUser();
 
   return (
-    <>
-      <main className="max-w-300 w-full mx-auto">
-        <div className="grid grid-cols-[1fr_20.5rem] gap-10 pb-10">
-          <div>
-            <header className="flex items-center justify-between w-full h-16 gap-4">
-              <div className="flex gap-4">
-                <div className="bg-[#F4F4F5] px-4 py-3 rounded-full inline-flex gap-4">
-                  <ClerkLogo />
-                  <div aria-hidden className="w-px h-6 bg-[#C7C7C8]" />
-                  <NextLogo />
-                </div>
-                <Link
-                  href="/"
-                  className="flex items-center gap-2 font-medium text-[0.8125rem] rounded-full px-3 py-2 hover:bg-gray-100"
-                >
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 19l-7-7 7-7"
-                    />
-                  </svg>
-                  Back to Home
-                </Link>
-              </div>
-              <div className="flex items-center gap-2">
-                <UserButton
-                  appearance={{
-                    elements: {
-                      userButtonAvatarBox: "size-8",
-                    },
-                  }}
-                />
-              </div>
-            </header>
-            <UserDetails />
-          </div>
-          <div className="flex flex-col">
-            <div className="flex items-center justify-center h-16 w-full">
-              <DeployButton className="h-8" />
-            </div>
-            <CodeSwitcher />
-          </div>
+    <div className="min-h-screen bg-black text-white"
+      style={{ fontFamily: 'var(--font-geist-sans), system-ui, sans-serif' }}>
+
+      {/* Navbar */}
+      <nav className="flex items-center justify-between px-8 md:px-14 py-6 border-b border-white/6">
+        <Link href="/">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="https://framerusercontent.com/images/qlrjMZi3igRllRBKsGBe7WQE.png"
+            alt="SalesMonk"
+            style={{ height: '22px', width: 'auto' }}
+          />
+        </Link>
+        <UserButton appearance={{ elements: { avatarBox: "w-7 h-7" } }} />
+      </nav>
+
+      <div className="max-w-2xl mx-auto px-6 py-16">
+        <p className="text-white/25 text-xs tracking-[0.2em] uppercase mb-3">
+          {user?.firstName ? `Hey, ${user.firstName}` : "Your applications"}
+        </p>
+        <h1 className="text-2xl text-white mb-10" style={{ fontWeight: 300, letterSpacing: '-0.02em' }}>
+          Application status
+        </h1>
+
+        {/* Placeholder — will show real data once Convex is connected */}
+        <div className="border border-white/8 rounded-xl p-8 text-center">
+          <p className="text-white/25 text-sm mb-4">No applications yet.</p>
+          <Link
+            href="/"
+            className="text-xs text-white/40 border border-white/10 px-4 py-2 rounded-full hover:border-white/30 hover:text-white transition-all"
+          >
+            View open roles →
+          </Link>
         </div>
-      </main>
-      <LearnMore cards={DASHBOARD_CARDS} />
-      <Footer />
-    </>
+      </div>
+    </div>
   );
 }
